@@ -12,7 +12,7 @@ public class UDPClient
 
 {
 
-    private int read;
+    
 
     private DatagramSocket clientSocket;
     
@@ -36,6 +36,7 @@ public class UDPClient
 
         try
         {
+        	int read = 0;
             file = new FileInputStream(filePath);
             while ( ( read = file.read(buffer)) != -1 )
             {	
