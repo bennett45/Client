@@ -2,6 +2,7 @@
 // Simple UDP File Transfer Client
 
 
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.*;
@@ -29,6 +30,7 @@ public class UDPClient
     
     public void SendFile(String filePath) throws IOException
     {
+    	//RunTCP(filePath);
     	
         FileInputStream file = null;
 
@@ -46,14 +48,22 @@ public class UDPClient
             }
 
         }
+        catch(Exception e)
+        {
+        	System.out.println(e);
+        }
         finally
         {
         	SendPacket(StopBuffer(buffer));
             clientSocket.close();
             CloseFile(file);
-        }
+            
+            System.out.println("File Sent");                                                                                                                          
+         }
 
     }
+
+	
 
 	private byte[] StopBuffer(byte[] buffer) 
 	{
@@ -81,18 +91,44 @@ public class UDPClient
 
          clientSocket.send(sendPacket);
 	}
+	
+	private void RunTCP(String filePath) throws IOException 
+	{
+		Socket socket = new Socket(IPAddress, portNumber);
+		DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+		FileInputStream file = null;
+
+        byte[] buffer = new byte[500];     
+
+        try
+        {
+        	int read = 0;
+            file = new FileInputStream(filePath);
+            while ( ( read = file.read(buffer)) != -1 )
+            {	
+                System.out.println("Data : "+ buffer.toString());
+                
+                output.write(buffer);
+                Arrays.fill( buffer, (byte)0);
+            }
+
+        }
+        catch(Exception e)
+        {
+        	System.out.println(e);
+        }
+        finally
+        {
+        	output.write(StopBuffer(buffer));
+            socket.close();
+            CloseFile(file);
+            
+            System.out.println("File Sent");                                                                                                                          
+         }
+
+		
+	}
 
 }
 
-/*
-
-      DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-
-      clientSocket.receive(receivePacket);
-
-      String modifiedSentence = new String(receivePacket.getData());
-
-      System.out.println("FROM SERVER:" + modifiedSentence);
-
- */
 
